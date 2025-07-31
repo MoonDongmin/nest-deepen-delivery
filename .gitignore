@@ -30,6 +30,8 @@ apps/user/.env
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 
+/postgres/**
+
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries

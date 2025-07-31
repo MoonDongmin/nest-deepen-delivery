@@ -1,9 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ProductModule } from './product/product.module';
-import {
-  ConfigModule,
-  ConfigService,
-} from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -28,5 +25,4 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     ProductModule,
   ],
 })
-export class AppModule {
-}
+export class AppModule {}

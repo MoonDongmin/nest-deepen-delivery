@@ -10,6 +10,8 @@ import { AuthService } from './auth.service';
 import { register } from 'tsconfig-paths';
 import { RegisterDto } from './dto/register-dto';
 import { Authorization } from './decorator/authorization.decorator';
+import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
+import { ParseBearerTokenDto } from './dto/parse-bearer-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -34,5 +36,19 @@ export class AuthController {
       throw new UnauthorizedException('토큰을 입력해주세요!');
     }
     return this.authService.login(token);
+  }
+
+  /**
+   * MS에서 사용할 수 있는 것은 MessagePattern(), EventPattern()이 있음
+   * MessagePattern: 응답을 다시 줄 수 있음
+   * EventPattern: 그냥 던지기만 함(응답을 기대하지 않음)
+   */
+  @MessagePattern({
+    cmd: 'parse_bearer_token',
+  })
+  @UsePipes(ValidationPipe)
+  parseBearerToken(@Payload() payload: ParseBearerTokenDto) {
+    console.log('Request Received');
+    return this.authService.parseBearerToken(payload.token, false);
   }
 }

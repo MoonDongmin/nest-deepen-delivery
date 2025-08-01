@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { RpcInterceptor } from '@app/common/interceptor';
 import { MakePaymentDto } from './dto/make-payment.dto';
+import { RpcInterceptor } from '@app/common';
 
 @Controller()
 export class PaymentController {

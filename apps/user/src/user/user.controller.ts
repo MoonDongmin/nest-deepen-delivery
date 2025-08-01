@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { RpcInterceptor } from '@app/common/interceptor';
 import { GetUserInfoDto } from './dto/get-user-info.dto';
+import { RpcInterceptor } from '@app/common';
 
 @Controller()
 export class UserController {

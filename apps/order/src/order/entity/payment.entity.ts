@@ -2,7 +2,7 @@ import {
   Prop,
   Schema,
   SchemaFactory,
-} from '@nestjs/mongoose';
+}                   from '@nestjs/mongoose';
 import { Customer } from './customer.entity';
 
 export enum PaymentMethod {

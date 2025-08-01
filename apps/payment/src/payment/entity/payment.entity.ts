@@ -40,7 +40,7 @@ export class Payment {
   expiryYear: string;
 
   @Column()
-  expiryMoth: string;
+  expiryMonth: string;
 
   @Column()
   birthOrRegistration: string;

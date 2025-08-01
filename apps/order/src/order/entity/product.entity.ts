@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Customer } from './customer.entity';
+import { Customer }                    from './customer.entity';
 
 @Schema({
   _id: false,

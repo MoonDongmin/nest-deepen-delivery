@@ -4,6 +4,13 @@ import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { PRODUCT_SERVICE, USER_SERVICE } from '@app/common';
 import { PaymentCancelledException } from './exception/payment-cancelled.exception';
+import { Product } from './entity/product.entity';
+import { Customer } from './entity/customer.entity';
+import { AddressDto } from './dto/address.dto';
+import { PaymentDto } from './dto/payment.dto';
+import { Model } from 'mongoose';
+import { Order } from './entity/order.entity';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class OrderService {
@@ -12,6 +19,8 @@ export class OrderService {
     private readonly userService: ClientProxy,
     @Inject(PRODUCT_SERVICE)
     private readonly productService: ClientProxy,
+    @InjectModel(Order.name)
+    private readonly orderModel: Model<Order>,
   ) {}
 
   async createOrder(createOrderDto: CreateOrderDto, token: string) {
@@ -25,15 +34,27 @@ export class OrderService {
     const products = await this.getProductsByIds(productIds);
 
     // 3) 총 금액 계산하기
+    const totalAmount = this.calculateTotalAmount(products);
+
     // 4) 금액 검증하기 - total이 맞는지 검사(FE에서 보내준 데이터랑)
+    this.validatePaymentAmount(totalAmount, payment.amount);
+
     // 5) 주문 생성하기 - 데이터베이스에 넣기
+    const customer = this.createCustomer(user);
+    const order = await this.createNewOrder(
+      customer,
+      products,
+      address,
+      payment,
+    );
+
     // 6) 결제 시도하기
     // 7) 주문 상태 업데이트하기
     // 8) 결과 반환하기
     return Promise.resolve(undefined);
   }
 
-  async getUserFromToken(token: string) {
+  private async getUserFromToken(token: string) {
     // 1) USER MS: JWT 토큰 검증
     const tResp = await lastValueFrom(
       this.userService.send({ cmd: 'parse_bearer_token' }, { token }),
@@ -55,7 +76,7 @@ export class OrderService {
     return uResp.data;
   }
 
-  async getProductsByIds(productIds: string[]) {
+  private async getProductsByIds(productIds: string[]): Promise<Product[]> {
     const resp = await lastValueFrom(
       this.productService.send({ cmd: 'get_products_info' }, { productIds }),
     );
@@ -70,5 +91,37 @@ export class OrderService {
       name: product.name,
       price: product.price,
     }));
+  }
+
+  private calculateTotalAmount(product: Product[]) {
+    return product.reduce((acc, next) => acc + next.price, 0);
+  }
+
+  private validatePaymentAmount(totalA: number, totalB: number) {
+    if (totalA !== totalB) {
+      throw new PaymentCancelledException('결제하려는 금액이 변경됐습니다!');
+    }
+  }
+
+  private createCustomer(user: { id: string; email: string; name: string }) {
+    return {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+    };
+  }
+
+  private async createNewOrder(
+    customer: Customer,
+    products: Product[],
+    deliveryAddress: AddressDto,
+    payment: PaymentDto,
+  ) {
+    return this.orderModel.create({
+      customer,
+      products,
+      deliveryAddress,
+      payment,
+    });
   }
 }

@@ -23,14 +23,14 @@ import { OrderStatus } from './entity/order.entity';
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Post()
-  @UsePipes(ValidationPipe)
-  async createOrder(
-    @Authorization() token: string,
-    @Body() createOrderDto: CreateOrderDto,
-  ) {
-    return this.orderService.createOrder(createOrderDto, token);
-  }
+  // @Post()
+  // @UsePipes(ValidationPipe)
+  // async createOrder(
+  //   @Authorization() token: string,
+  //   @Body() createOrderDto: CreateOrderDto,
+  // ) {
+  //   return this.orderService.createOrder(createOrderDto, token);
+  // }
 
   @EventPattern({ cmd: 'delivery_started' })
   @UseInterceptors(RpcInterceptor)

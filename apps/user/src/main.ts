@@ -15,8 +15,6 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservices(); // MS 실행함
-
-  await app.listen(process.env.HTTP_PORT ?? 3000);
 }
 
 bootstrap();

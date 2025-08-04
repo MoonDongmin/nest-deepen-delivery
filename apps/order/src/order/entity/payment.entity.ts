@@ -1,13 +1,9 @@
-import {
-  Prop,
-  Schema,
-  SchemaFactory,
-}                   from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Customer } from './customer.entity';
 
 export enum PaymentMethod {
   creditCard = 'CreditCard',
-  kakao = 'kakao',
+  kakao = 'Kakao',
 }
 
 @Schema({

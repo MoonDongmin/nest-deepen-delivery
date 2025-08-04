@@ -35,8 +35,8 @@ import {
           useFactory: (configService: ConfigService) => ({
             transport: Transport.TCP,
             options: {
-              host: configService.getOrThrow<string>('NOTIFICATION_HOST'),
-              port: configService.getOrThrow<number>('NOTIFICATION_TCP_PORT'),
+              host: 'redis',
+              port: 6379,
             },
           }),
           inject: [ConfigService],

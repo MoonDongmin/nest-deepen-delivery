@@ -9,8 +9,8 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP, // 어떤 것으로 통신할 것인가
     options: {
-      host: '0.0.0.0', // 모든 곳에서 통신을 받겠다
-      port: parseInt(process.env.TCP_PORT) || 3001,
+      host: 'redis',
+      port: 6379,
     },
   });
 

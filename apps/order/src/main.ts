@@ -6,10 +6,13 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.TCP, // 어떤 것으로 통신할 것인가
+    transport: Transport.RMQ,
     options: {
-      host: '0.0.0.0', // 모든 곳에서 통신을 받겠다
-      port: parseInt(process.env.TCP_PORT) || 3001,
+      urls: ['amqp://rabbitmq:5672'],
+      queue: 'order_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
+      queueOptions: {
+        durable: false,
+      },
     },
   });
 

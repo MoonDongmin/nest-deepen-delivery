@@ -33,10 +33,13 @@ import {
         {
           name: NOTIFICATION_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.TCP,
+            transport: Transport.RMQ,
             options: {
-              host: configService.getOrThrow<string>('NOTIFICATION_HOST'),
-              port: configService.getOrThrow<number>('NOTIFICATION_TCP_PORT'),
+              urls: ['amqp://rabbitmq:5672'],
+              queue: 'notification_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
+              queueOptions: {
+                durable: false,
+              },
             },
           }),
           inject: [ConfigService],

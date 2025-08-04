@@ -1,8 +1,4 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-} from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { OrderModule } from './order/order.module';
 import { ProductModule } from './product/product.module';
 import { AuthModule } from './auth/auth.module';
@@ -35,10 +31,13 @@ import { BearerTokenMiddleware } from './auth/middleware/bearer-token.middleware
         {
           name: USER_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.REDIS,
+            transport: Transport.RMQ,
             options: {
-              host: 'redis',
-              port: 6379,
+              urls: ['amqp://rabbitmq:5672'],
+              queue: 'user_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
+              queueOptions: {
+                durable: false,
+              },
             },
           }),
           inject: [ConfigService],
@@ -46,10 +45,13 @@ import { BearerTokenMiddleware } from './auth/middleware/bearer-token.middleware
         {
           name: PRODUCT_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.REDIS,
+            transport: Transport.RMQ,
             options: {
-              host: 'redis',
-              port: 6379,
+              urls: ['amqp://rabbitmq:5672'],
+              queue: 'product_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
+              queueOptions: {
+                durable: false,
+              },
             },
           }),
           inject: [ConfigService],
@@ -57,10 +59,13 @@ import { BearerTokenMiddleware } from './auth/middleware/bearer-token.middleware
         {
           name: ORDER_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.REDIS,
+            transport: Transport.RMQ,
             options: {
-              host: 'redis',
-              port: 6379,
+              urls: ['amqp://rabbitmq:5672'],
+              queue: 'order_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
+              queueOptions: {
+                durable: false,
+              },
             },
           }),
           inject: [ConfigService],

@@ -32,10 +32,13 @@ import { PAYMENT_SERVICE, PRODUCT_SERVICE, USER_SERVICE } from '@app/common';
         {
           name: USER_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.REDIS,
+            transport: Transport.RMQ,
             options: {
-              host: 'redis',
-              port: 6379,
+              urls: ['amqp://rabbitmq:5672'],
+              queue: 'user_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
+              queueOptions: {
+                durable: false,
+              },
             },
           }),
           inject: [ConfigService],
@@ -43,10 +46,13 @@ import { PAYMENT_SERVICE, PRODUCT_SERVICE, USER_SERVICE } from '@app/common';
         {
           name: PRODUCT_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.REDIS,
+            transport: Transport.RMQ,
             options: {
-              host: 'redis',
-              port: 6379,
+              urls: ['amqp://rabbitmq:5672'],
+              queue: 'product_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
+              queueOptions: {
+                durable: false,
+              },
             },
           }),
           inject: [ConfigService],
@@ -54,10 +60,13 @@ import { PAYMENT_SERVICE, PRODUCT_SERVICE, USER_SERVICE } from '@app/common';
         {
           name: PAYMENT_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.REDIS,
+            transport: Transport.RMQ,
             options: {
-              host: 'redis',
-              port: 6379,
+              urls: ['amqp://rabbitmq:5672'],
+              queue: 'payment_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
+              queueOptions: {
+                durable: false,
+              },
             },
           }),
           inject: [ConfigService],

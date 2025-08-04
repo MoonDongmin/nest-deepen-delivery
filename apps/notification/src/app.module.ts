@@ -30,10 +30,13 @@ import {
         {
           name: ORDER_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.REDIS,
+            transport: Transport.RMQ,
             options: {
-              host: 'redis',
-              port: 6379,
+              urls: ['amqp://rabbitmq:5672'],
+              queue: 'order_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
+              queueOptions: {
+                durable: false,
+              },
             },
           }),
           inject: [ConfigService],

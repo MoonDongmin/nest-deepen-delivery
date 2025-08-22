@@ -5,11 +5,15 @@ import { NotificationModule } from './notification/notification.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import {
+  NotificationMicroservice,
   ORDER_SERVICE,
   PAYMENT_SERVICE,
   PRODUCT_SERVICE,
   USER_SERVICE,
+  OrderMicroservice,
 } from '@app/common';
+import { join } from 'path';
+import process from 'node:process';
 
 @Module({
   imports: [
@@ -30,13 +34,11 @@ import {
         {
           name: ORDER_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.RMQ,
+            transport: Transport.GRPC,
             options: {
-              urls: ['amqp://rabbitmq:5672'],
-              queue: 'order_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
-              queueOptions: {
-                durable: false,
-              },
+              package: OrderMicroservice.protobufPackage,
+              protoPath: join(process.cwd(), 'proto/order.proto'),
+              url: configService.getOrThrow('GRPC_URL'),
             },
           }),
           inject: [ConfigService],

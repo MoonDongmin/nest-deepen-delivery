@@ -4,14 +4,20 @@ import { ProductModule } from './product/product.module';
 import { AuthModule } from './auth/auth.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import {
+  NotificationMicroservice,
   ORDER_SERVICE,
   PAYMENT_SERVICE,
   PRODUCT_SERVICE,
   USER_SERVICE,
+  UserMicroservice,
+  ProductMicroservice,
+  OrderMicroservice,
 } from '@app/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { BearerTokenMiddleware } from './auth/middleware/bearer-token.middleware';
+import { join } from 'path';
+import process from 'node:process';
 
 @Module({
   imports: [
@@ -31,13 +37,11 @@ import { BearerTokenMiddleware } from './auth/middleware/bearer-token.middleware
         {
           name: USER_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.RMQ,
+            transport: Transport.GRPC,
             options: {
-              urls: ['amqp://rabbitmq:5672'],
-              queue: 'user_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
-              queueOptions: {
-                durable: false,
-              },
+              package: UserMicroservice.protobufPackage,
+              protoPath: join(process.cwd(), 'proto/user.proto'),
+              url: configService.getOrThrow('USER_GRPC_URL'),
             },
           }),
           inject: [ConfigService],
@@ -45,13 +49,11 @@ import { BearerTokenMiddleware } from './auth/middleware/bearer-token.middleware
         {
           name: PRODUCT_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.RMQ,
+            transport: Transport.GRPC,
             options: {
-              urls: ['amqp://rabbitmq:5672'],
-              queue: 'product_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
-              queueOptions: {
-                durable: false,
-              },
+              package: ProductMicroservice.protobufPackage,
+              protoPath: join(process.cwd(), 'proto/product.proto'),
+              url: configService.getOrThrow('PRODUCT_GRPC_URL'),
             },
           }),
           inject: [ConfigService],
@@ -59,13 +61,11 @@ import { BearerTokenMiddleware } from './auth/middleware/bearer-token.middleware
         {
           name: ORDER_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.RMQ,
+            transport: Transport.GRPC,
             options: {
-              urls: ['amqp://rabbitmq:5672'],
-              queue: 'order_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
-              queueOptions: {
-                durable: false,
-              },
+              package: OrderMicroservice.protobufPackage,
+              protoPath: join(process.cwd(), 'proto/order.proto'),
+              url: configService.getOrThrow('ORDER_GRPC_URL'),
             },
           }),
           inject: [ConfigService],

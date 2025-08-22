@@ -16,11 +16,9 @@ export class NotificationController
 {
   constructor(private readonly notificationService: NotificationService) {}
 
-  async sendPaymentNotification(
-    @Payload() payload: SendPaymentNotificationDto,
-  ) {
+  async sendPaymentNotification(request: SendPaymentNotificationDto) {
     const resp = (
-      await this.notificationService.sendPaymentNotification(payload)
+      await this.notificationService.sendPaymentNotification(request)
     ).toJSON();
 
     return {

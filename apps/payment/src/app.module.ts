@@ -41,7 +41,7 @@ import process from 'node:process';
             options: {
               package: NotificationMicroservice.protobufPackage,
               protoPath: join(process.cwd(), 'proto/notification.proto'),
-              url: configService.getOrThrow('GRPC_URL'),
+              url: configService.getOrThrow('NOTIFICACTION_GRPC_URL'),
             },
           }),
           inject: [ConfigService],

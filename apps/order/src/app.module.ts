@@ -4,7 +4,17 @@ import * as Joi from 'joi';
 import { OrderModule } from './order/order.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { PAYMENT_SERVICE, PRODUCT_SERVICE, USER_SERVICE } from '@app/common';
+import {
+  OrderMicroservice,
+  PAYMENT_SERVICE,
+  PRODUCT_SERVICE,
+  USER_SERVICE,
+  UserMicroservice,
+  ProductMicroservice,
+  PaymentMicroservice,
+} from '@app/common';
+import { join } from 'path';
+import process from 'node:process';
 
 @Module({
   imports: [
@@ -32,13 +42,11 @@ import { PAYMENT_SERVICE, PRODUCT_SERVICE, USER_SERVICE } from '@app/common';
         {
           name: USER_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.RMQ,
+            transport: Transport.GRPC,
             options: {
-              urls: ['amqp://rabbitmq:5672'],
-              queue: 'user_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
-              queueOptions: {
-                durable: false,
-              },
+              package: UserMicroservice.protobufPackage,
+              protoPath: join(process.cwd(), 'proto/user.proto'),
+              url: configService.getOrThrow('USER_GRPC_URL'),
             },
           }),
           inject: [ConfigService],
@@ -46,13 +54,11 @@ import { PAYMENT_SERVICE, PRODUCT_SERVICE, USER_SERVICE } from '@app/common';
         {
           name: PRODUCT_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.RMQ,
+            transport: Transport.GRPC,
             options: {
-              urls: ['amqp://rabbitmq:5672'],
-              queue: 'product_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
-              queueOptions: {
-                durable: false,
-              },
+              package: ProductMicroservice.protobufPackage,
+              protoPath: join(process.cwd(), 'proto/product.proto'),
+              url: configService.getOrThrow('PRODUCT_GRPC_URL'),
             },
           }),
           inject: [ConfigService],
@@ -60,13 +66,11 @@ import { PAYMENT_SERVICE, PRODUCT_SERVICE, USER_SERVICE } from '@app/common';
         {
           name: PAYMENT_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.RMQ,
+            transport: Transport.GRPC,
             options: {
-              urls: ['amqp://rabbitmq:5672'],
-              queue: 'payment_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
-              queueOptions: {
-                durable: false,
-              },
+              package: PaymentMicroservice.protobufPackage,
+              protoPath: join(process.cwd(), 'proto/payment.proto'),
+              url: configService.getOrThrow('PAYMENT_GRPC_URL'),
             },
           }),
           inject: [ConfigService],

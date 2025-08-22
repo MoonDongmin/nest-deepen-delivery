@@ -18,8 +18,8 @@ export class ProductController
     };
   }
 
-  async getProductsInfo(@Payload() data: GetProductsInfoDto) {
-    const resp = await this.productService.getProductsInfo(data.productIds);
+  async getProductsInfo(request: GetProductsInfoDto) {
+    const resp = await this.productService.getProductsInfo(request.productIds);
     return {
       products: resp,
     };

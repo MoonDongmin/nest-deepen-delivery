@@ -10,21 +10,21 @@ export class AuthController implements UserMicroservice.AuthServiceController {
    * MessagePattern: 응답을 다시 줄 수 있음
    * EventPattern: 그냥 던지기만 함(응답을 기대하지 않음)
    */
-  parseBearerToken(payload: UserMicroservice.ParseBearerTokenRequest) {
-    return this.authService.parseBearerToken(payload.token, false);
+  parseBearerToken(request: UserMicroservice.ParseBearerTokenRequest) {
+    return this.authService.parseBearerToken(request.token, false);
   }
 
-  registerUser(registerDto: UserMicroservice.RegisterUserRequest) {
-    const { token } = registerDto;
+  registerUser(request: UserMicroservice.RegisterUserRequest) {
+    const { token } = request;
     if (token === null) {
       throw new UnauthorizedException('토큰을 입력해주세요!');
     }
 
-    return this.authService.register(token, registerDto);
+    return this.authService.register(token, request);
   }
 
-  loginUser(loginDto: UserMicroservice.LoginUserRequest) {
-    const { token } = loginDto;
+  loginUser(request: UserMicroservice.LoginUserRequest) {
+    const { token } = request;
     if (token === null) {
       throw new UnauthorizedException('토큰을 입력해주세요!');
     }

@@ -9,10 +9,11 @@ import { PaymentService } from './payment.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { MakePaymentDto } from './dto/make-payment.dto';
 import { RpcInterceptor } from '@app/common/interceptor/rpc.interceptor';
-import { PaymentMicroservice } from '@app/common';
+import { PaymentMicroservice, UserMicroservice } from '@app/common';
 import { PaymentMethod } from './entity/payment.entity';
 
 @Controller()
+@PaymentMicroservice.PaymentServiceControllerMethods()
 export class PaymentController
   implements PaymentMicroservice.PaymentServiceController
 {

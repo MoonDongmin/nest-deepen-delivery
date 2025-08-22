@@ -1,29 +1,37 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { ClientProxy } from '@nestjs/microservices';
-import { ORDER_SERVICE, UserMeta, UserPayloadDto } from '@app/common';
+import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
+import {
+  ORDER_SERVICE,
+  UserMeta,
+  UserPayloadDto,
+  OrderMicroservice,
+} from '@app/common';
 
 @Injectable()
-export class OrderService {
+export class OrderService implements OnModuleInit {
+  orderService: OrderMicroservice.OrderServiceClient;
   constructor(
     @Inject(ORDER_SERVICE)
-    private readonly orderMicroService: ClientProxy,
+    private readonly orderMicroService: ClientGrpc,
   ) {}
+
+  onModuleInit(): any {
+    this.orderService =
+      this.orderMicroService.getService<OrderMicroservice.OrderServiceClient>(
+        'OrderService',
+      );
+  }
 
   async createOrder(
     createOrderDto: CreateOrderDto,
     userPayload: UserPayloadDto,
   ) {
-    return this.orderMicroService.send<any, CreateOrderDto & UserMeta>(
-      {
-        cmd: 'create_order',
+    return this.orderService.createOrder({
+      ...createOrderDto,
+      meta: {
+        user: userPayload,
       },
-      {
-        ...createOrderDto,
-        meta: {
-          user: userPayload,
-        },
-      },
-    );
+    });
   }
 }

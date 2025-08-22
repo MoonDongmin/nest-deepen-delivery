@@ -7,10 +7,15 @@ import {
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { RpcInterceptor, NotificationMicroservice } from '@app/common';
+import {
+  RpcInterceptor,
+  NotificationMicroservice,
+  UserMicroservice,
+} from '@app/common';
 import { SendPaymentNotificationDto } from './dto/send-payment-notification.dto';
 
 @Controller()
+@NotificationMicroservice.NotificationServiceControllerMethods()
 export class NotificationController
   implements NotificationMicroservice.NotificationServiceController
 {

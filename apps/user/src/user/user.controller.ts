@@ -6,12 +6,14 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { MessagePattern } from '@nestjs/microservices';
+import { GrpcMethod, MessagePattern } from '@nestjs/microservices';
 import { GetUserInfoDto } from './dto/get-user-info.dto';
 import { RpcInterceptor } from '@app/common';
 import { UserMicroservice } from '@app/common';
+import { UserServiceControllerMethods } from '@app/common/grpc/proto/user';
 
 @Controller()
+@UserMicroservice.UserServiceControllerMethods()
 export class UserController implements UserMicroservice.UserServiceController {
   constructor(private readonly userService: UserService) {}
 

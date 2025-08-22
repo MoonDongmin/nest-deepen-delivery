@@ -14,7 +14,7 @@ import {
   PaymentMicroservice,
 } from '@app/common';
 import { join } from 'path';
-import process from 'node:process';
+import * as process from 'node:process';
 
 @Module({
   imports: [
@@ -29,6 +29,10 @@ import process from 'node:process';
         PAYMENT_HOST: Joi.string().required(),
         PAYMENT_TCP_PORT: Joi.number().required(),
         DB_URL: Joi.string().required(),
+        GRPC_URL: Joi.string().required(),
+        USER_GRPC_URL: Joi.string().required(),
+        PRODUCT_GRPC_URL: Joi.string().required(),
+        PAYMENT_GRPC_URL: Joi.string().required(),
       }),
     }),
     MongooseModule.forRootAsync({

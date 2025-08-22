@@ -9,7 +9,7 @@ import type { Metadata } from "@grpc/grpc-js";
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
 import { Observable } from "rxjs";
 
-export const protobufPackage = "payment";
+export const protobufPackage = "notification";
 
 export interface SendPaymentNotificationRequest {
   to: string;
@@ -24,16 +24,16 @@ export interface SendPaymentNotificationResponse {
   status: string;
 }
 
-export const PAYMENT_PACKAGE_NAME = "payment";
+export const NOTIFICATION_PACKAGE_NAME = "notification";
 
-export interface PaymentServiceClient {
+export interface NotificationServiceClient {
   sendPaymentNotification(
     request: SendPaymentNotificationRequest,
     metadata?: Metadata,
   ): Observable<SendPaymentNotificationResponse>;
 }
 
-export interface PaymentServiceController {
+export interface NotificationServiceController {
   sendPaymentNotification(
     request: SendPaymentNotificationRequest,
     metadata?: Metadata,
@@ -43,19 +43,19 @@ export interface PaymentServiceController {
     | SendPaymentNotificationResponse;
 }
 
-export function PaymentServiceControllerMethods() {
+export function NotificationServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = ["sendPaymentNotification"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcMethod("PaymentService", method)(constructor.prototype[method], method, descriptor);
+      GrpcMethod("NotificationService", method)(constructor.prototype[method], method, descriptor);
     }
     const grpcStreamMethods: string[] = [];
     for (const method of grpcStreamMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcStreamMethod("PaymentService", method)(constructor.prototype[method], method, descriptor);
+      GrpcStreamMethod("NotificationService", method)(constructor.prototype[method], method, descriptor);
     }
   };
 }
 
-export const PAYMENT_SERVICE_NAME = "PaymentService";
+export const NOTIFICATION_SERVICE_NAME = "NotificationService";

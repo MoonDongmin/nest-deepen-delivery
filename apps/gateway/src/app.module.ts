@@ -17,7 +17,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { BearerTokenMiddleware } from './auth/middleware/bearer-token.middleware';
 import { join } from 'path';
-import process from 'node:process';
+import * as process from 'node:process';
 
 @Module({
   imports: [

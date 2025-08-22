@@ -4,7 +4,7 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import { PaymentMicroservice } from '@app/common';
 import { join } from 'path';
-import process from 'process';
+import * as process from 'process';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +18,8 @@ async function bootstrap() {
       url: configService.getOrThrow('GRPC_URL'),
     },
   });
+
+  await app.init();
 
   await app.startAllMicroservices(); // MS 실행함
 }

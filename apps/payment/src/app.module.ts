@@ -13,7 +13,7 @@ import {
   NotificationMicroservice,
 } from '@app/common';
 import { join } from 'path';
-import process from 'node:process';
+import * as process from 'node:process';
 
 @Module({
   imports: [

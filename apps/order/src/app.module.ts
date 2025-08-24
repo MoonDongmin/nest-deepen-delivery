@@ -36,6 +36,7 @@ import * as process from 'node:process';
       }),
     }),
     MongooseModule.forRootAsync({
+      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         uri: configService.getOrThrow('DB_URL'),
       }),
@@ -45,6 +46,7 @@ import * as process from 'node:process';
       clients: [
         {
           name: USER_SERVICE,
+          imports: [ConfigModule],
           useFactory: (configService: ConfigService) => ({
             transport: Transport.GRPC,
             options: {
@@ -57,6 +59,7 @@ import * as process from 'node:process';
         },
         {
           name: PRODUCT_SERVICE,
+          imports: [ConfigModule],
           useFactory: (configService: ConfigService) => ({
             transport: Transport.GRPC,
             options: {
@@ -69,6 +72,7 @@ import * as process from 'node:process';
         },
         {
           name: PAYMENT_SERVICE,
+          imports: [ConfigModule],
           useFactory: (configService: ConfigService) => ({
             transport: Transport.GRPC,
             options: {

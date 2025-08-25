@@ -4,14 +4,21 @@ import { ProductModule } from './product/product.module';
 import { AuthModule } from './auth/auth.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import {
+  NotificationMicroservice,
   ORDER_SERVICE,
   PAYMENT_SERVICE,
   PRODUCT_SERVICE,
   USER_SERVICE,
+  UserMicroservice,
+  ProductMicroservice,
+  OrderMicroservice,
 } from '@app/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { BearerTokenMiddleware } from './auth/middleware/bearer-token.middleware';
+import { join } from 'path';
+import * as process from 'node:process';
+import { traceInterceptor } from '@app/common/grpc/interceptor';
 
 @Module({
   imports: [
@@ -30,42 +37,48 @@ import { BearerTokenMiddleware } from './auth/middleware/bearer-token.middleware
       clients: [
         {
           name: USER_SERVICE,
+          imports: [ConfigModule],
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.RMQ,
+            transport: Transport.GRPC,
             options: {
-              urls: ['amqp://rabbitmq:5672'],
-              queue: 'user_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
-              queueOptions: {
-                durable: false,
+              channelOptions: {
+                interceptors: [traceInterceptor('Gateway')],
               },
+              package: UserMicroservice.protobufPackage,
+              protoPath: join(process.cwd(), 'proto/user.proto'),
+              url: configService.getOrThrow('USER_GRPC_URL'),
             },
           }),
           inject: [ConfigService],
         },
         {
           name: PRODUCT_SERVICE,
+          imports: [ConfigModule],
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.RMQ,
+            transport: Transport.GRPC,
             options: {
-              urls: ['amqp://rabbitmq:5672'],
-              queue: 'product_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
-              queueOptions: {
-                durable: false,
+              channelOptions: {
+                interceptors: [traceInterceptor('Gateway')],
               },
+              package: ProductMicroservice.protobufPackage,
+              protoPath: join(process.cwd(), 'proto/product.proto'),
+              url: configService.getOrThrow('PRODUCT_GRPC_URL'),
             },
           }),
           inject: [ConfigService],
         },
         {
           name: ORDER_SERVICE,
+          imports: [ConfigModule],
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.RMQ,
+            transport: Transport.GRPC,
             options: {
-              urls: ['amqp://rabbitmq:5672'],
-              queue: 'order_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
-              queueOptions: {
-                durable: false,
+              channelOptions: {
+                interceptors: [traceInterceptor('Gateway')],
               },
+              package: OrderMicroservice.protobufPackage,
+              protoPath: join(process.cwd(), 'proto/order.proto'),
+              url: configService.getOrThrow('ORDER_GRPC_URL'),
             },
           }),
           inject: [ConfigService],

@@ -13,10 +13,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         REFRESH_TOKEN_SECRET: Joi.string().required(),
         ACCESS_TOKEN_SECRET: Joi.string().required(),
         HTTP_PORT: Joi.number().required(),
+        GRPC_URL: Joi.string().required(), // 추가 필요
         DB_URL: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.getOrThrow('DB_URL'),

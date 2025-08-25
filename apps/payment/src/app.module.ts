@@ -7,9 +7,14 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import {
   NOTIFICATION_SERVICE,
   PAYMENT_SERVICE,
+  PaymentMicroservice,
   PRODUCT_SERVICE,
   USER_SERVICE,
+  NotificationMicroservice,
+  traceInterceptor,
 } from '@app/common';
+import { join } from 'path';
+import * as process from 'node:process';
 
 @Module({
   imports: [
@@ -17,9 +22,12 @@ import {
       isGlobal: true,
       validationSchema: Joi.object({
         DB_URL: Joi.string().required(),
+        GRPC_URL: Joi.string().required(), // 추가 필요
+        NOTIFICATION_GRPC_URL: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.getOrThrow('DB_URL'),
@@ -32,14 +40,16 @@ import {
       clients: [
         {
           name: NOTIFICATION_SERVICE,
+          imports: [ConfigModule],
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.RMQ,
+            transport: Transport.GRPC,
             options: {
-              urls: ['amqp://rabbitmq:5672'],
-              queue: 'notification_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
-              queueOptions: {
-                durable: false,
+              channelOptions: {
+                interceptors: [traceInterceptor('Payment')],
               },
+              package: NotificationMicroservice.protobufPackage,
+              protoPath: join(process.cwd(), 'proto/notification.proto'),
+              url: configService.getOrThrow('NOTIFICATION_GRPC_URL'),
             },
           }),
           inject: [ConfigService],

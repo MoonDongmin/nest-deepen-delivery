@@ -1,18 +1,34 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { PRODUCT_SERVICE } from '@app/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
+import {
+  constructMetadata,
+  PRODUCT_SERVICE,
+  ProductMicroservice,
+} from '@app/common';
 import { lastValueFrom } from 'rxjs';
 
 @Injectable()
-export class ProductService {
+export class ProductService implements OnModuleInit {
+  productService: ProductMicroservice.ProductServiceClient;
+
   constructor(
     @Inject(PRODUCT_SERVICE)
-    private readonly productMicroService: ClientProxy,
+    private readonly productMicroService: ClientGrpc,
   ) {}
+
+  onModuleInit(): any {
+    this.productService =
+      this.productMicroService.getService<ProductMicroservice.ProductServiceClient>(
+        'ProductService',
+      );
+  }
 
   createSamples() {
     return lastValueFrom(
-      this.productMicroService.send({ cmd: 'create_samples' }, {}),
+      this.productService.createSamples(
+        {},
+        constructMetadata(ProductService.name, 'createSamples'),
+      ),
     );
   }
 }

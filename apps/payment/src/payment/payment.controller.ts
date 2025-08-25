@@ -8,16 +8,33 @@ import {
 import { PaymentService } from './payment.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { MakePaymentDto } from './dto/make-payment.dto';
-import { RpcInterceptor } from '@app/common';
+import { RpcInterceptor } from '@app/common/interceptor/rpc.interceptor';
+import {
+  GrpcInterceptor,
+  PaymentMicroservice,
+  UserMicroservice,
+} from '@app/common';
+import { PaymentMethod } from './entity/payment.entity';
+import { Metadata } from '@grpc/grpc-js';
 
 @Controller()
-export class PaymentController {
+@PaymentMicroservice.PaymentServiceControllerMethods()
+@UseInterceptors(GrpcInterceptor)
+export class PaymentController
+  implements PaymentMicroservice.PaymentServiceController
+{
   constructor(private readonly paymentService: PaymentService) {}
 
-  @MessagePattern({ cmd: 'make_payment' })
-  @UsePipes(ValidationPipe)
-  @UseInterceptors(RpcInterceptor)
-  makePayment(@Payload() payload: MakePaymentDto) {
-    return this.paymentService.makePayment(payload);
+  makePayment(
+    request: PaymentMicroservice.MakePaymentRequest,
+    metadata: Metadata,
+  ) {
+    return this.paymentService.makePayment(
+      {
+        ...request,
+        paymentMethod: request.paymentMethod as PaymentMethod,
+      },
+      metadata,
+    );
   }
 }

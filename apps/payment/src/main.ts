@@ -1,20 +1,25 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
+import { PaymentMicroservice } from '@app/common';
+import { join } from 'path';
+import * as process from 'process';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
 
   app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.RMQ,
+    transport: Transport.GRPC,
     options: {
-      urls: ['amqp://rabbitmq:5672'],
-      queue: 'payment_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
-      queueOptions: {
-        durable: false,
-      },
+      package: PaymentMicroservice.protobufPackage,
+      protoPath: join(process.cwd(), 'proto/payment.proto'),
+      url: configService.getOrThrow('GRPC_URL'),
     },
   });
+
+  await app.init();
 
   await app.startAllMicroservices(); // MS 실행함
 }

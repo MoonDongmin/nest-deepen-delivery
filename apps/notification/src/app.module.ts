@@ -5,11 +5,16 @@ import { NotificationModule } from './notification/notification.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import {
+  NotificationMicroservice,
   ORDER_SERVICE,
   PAYMENT_SERVICE,
   PRODUCT_SERVICE,
   USER_SERVICE,
+  OrderMicroservice,
+  traceInterceptor,
 } from '@app/common';
+import { join } from 'path';
+import * as process from 'node:process';
 
 @Module({
   imports: [
@@ -20,6 +25,7 @@ import {
       }),
     }),
     MongooseModule.forRootAsync({
+      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         uri: configService.getOrThrow('DB_URL'),
       }),
@@ -29,14 +35,16 @@ import {
       clients: [
         {
           name: ORDER_SERVICE,
+          imports: [ConfigModule],
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.RMQ,
+            transport: Transport.GRPC,
             options: {
-              urls: ['amqp://rabbitmq:5672'],
-              queue: 'order_queue', // 같은 큐 안에서만 메시지 패턴이 정의가 됨
-              queueOptions: {
-                durable: false,
+              channelOptions: {
+                interceptors: [traceInterceptor('Notification')],
               },
+              package: OrderMicroservice.protobufPackage,
+              protoPath: join(process.cwd(), 'proto/order.proto'),
+              url: configService.getOrThrow('ORDER_GRPC_URL'),
             },
           }),
           inject: [ConfigService],

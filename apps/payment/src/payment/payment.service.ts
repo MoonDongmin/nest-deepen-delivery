@@ -1,22 +1,37 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment, PaymentStatus } from './entity/payment.entity';
 import { Repository } from 'typeorm';
 import { MakePaymentDto } from './dto/make-payment.dto';
-import { ClientProxy } from '@nestjs/microservices';
-import { NOTIFICATION_SERVICE } from '@app/common';
+import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
+import {
+  constructMetadata,
+  NOTIFICATION_SERVICE,
+  NotificationMicroservice,
+} from '@app/common';
 import { lastValueFrom } from 'rxjs';
+import { Metadata, status } from '@grpc/grpc-js';
+import { NotificationModule } from '../../../notification/src/notification/notification.module';
 
 @Injectable()
-export class PaymentService {
+export class PaymentService implements OnModuleInit {
+  notificationService: NotificationMicroservice.NotificationServiceClient;
+
   constructor(
     @InjectRepository(Payment)
     private readonly paymentRepository: Repository<Payment>,
     @Inject(NOTIFICATION_SERVICE)
-    private readonly notificationService: ClientProxy,
+    private readonly notificationMicroservice: ClientGrpc,
   ) {}
 
-  async makePayment(payload: MakePaymentDto) {
+  onModuleInit(): any {
+    this.notificationService =
+      this.notificationMicroservice.getService<NotificationMicroservice.NotificationServiceClient>(
+        'NotificationService',
+      );
+  }
+
+  async makePayment(payload: MakePaymentDto, metadata: Metadata) {
     let paymentId;
     try {
       const result = await this.paymentRepository.save(payload);
@@ -28,7 +43,7 @@ export class PaymentService {
       await this.updatePaymentStatus(result.id, PaymentStatus.approved);
 
       // notification 보내기
-      this.sendNotification(payload.orderId, payload.userEmail);
+      this.sendNotification(payload.orderId, payload.userEmail, metadata);
 
       return this.paymentRepository.findOneBy({ id: result.id });
     } catch (e) {
@@ -55,14 +70,18 @@ export class PaymentService {
     );
   }
 
-  private async sendNotification(orderId: string, to: string) {
+  private async sendNotification(
+    orderId: string,
+    to: string,
+    metadata: Metadata,
+  ) {
     const resp = await lastValueFrom(
-      this.notificationService.send(
-        { cmd: 'send_payment_notification' },
+      this.notificationService.sendPaymentNotification(
         {
           to,
           orderId,
         },
+        constructMetadata(PaymentService.name, 'sendNotification', metadata),
       ),
     );
   }

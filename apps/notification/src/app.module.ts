@@ -11,6 +11,7 @@ import {
   PRODUCT_SERVICE,
   USER_SERVICE,
   OrderMicroservice,
+  traceInterceptor,
 } from '@app/common';
 import { join } from 'path';
 import * as process from 'node:process';
@@ -24,6 +25,7 @@ import * as process from 'node:process';
       }),
     }),
     MongooseModule.forRootAsync({
+      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         uri: configService.getOrThrow('DB_URL'),
       }),
@@ -33,9 +35,13 @@ import * as process from 'node:process';
       clients: [
         {
           name: ORDER_SERVICE,
+          imports: [ConfigModule],
           useFactory: (configService: ConfigService) => ({
             transport: Transport.GRPC,
             options: {
+              channelOptions: {
+                interceptors: [traceInterceptor('Notification')],
+              },
               package: OrderMicroservice.protobufPackage,
               protoPath: join(process.cwd(), 'proto/order.proto'),
               url: configService.getOrThrow('ORDER_GRPC_URL'),

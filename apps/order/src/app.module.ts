@@ -12,6 +12,7 @@ import {
   UserMicroservice,
   ProductMicroservice,
   PaymentMicroservice,
+  traceInterceptor,
 } from '@app/common';
 import { join } from 'path';
 import * as process from 'node:process';
@@ -22,17 +23,14 @@ import * as process from 'node:process';
       isGlobal: true,
       validationSchema: Joi.object({
         HTTP_PORT: Joi.number().required(),
+        TCP_PORT: Joi.number().required(),
         USER_HOST: Joi.string().required(),
         USER_TCP_PORT: Joi.number().required(),
+        DB_URL: Joi.string().required(),
         PRODUCT_HOST: Joi.string().required(),
         PRODUCT_TCP_PORT: Joi.number().required(),
         PAYMENT_HOST: Joi.string().required(),
         PAYMENT_TCP_PORT: Joi.number().required(),
-        DB_URL: Joi.string().required(),
-        GRPC_URL: Joi.string().required(),
-        USER_GRPC_URL: Joi.string().required(),
-        PRODUCT_GRPC_URL: Joi.string().required(),
-        PAYMENT_GRPC_URL: Joi.string().required(),
       }),
     }),
     MongooseModule.forRootAsync({
@@ -50,6 +48,9 @@ import * as process from 'node:process';
           useFactory: (configService: ConfigService) => ({
             transport: Transport.GRPC,
             options: {
+              channelOptions: {
+                interceptors: [traceInterceptor('Order')],
+              },
               package: UserMicroservice.protobufPackage,
               protoPath: join(process.cwd(), 'proto/user.proto'),
               url: configService.getOrThrow('USER_GRPC_URL'),
@@ -63,6 +64,9 @@ import * as process from 'node:process';
           useFactory: (configService: ConfigService) => ({
             transport: Transport.GRPC,
             options: {
+              channelOptions: {
+                interceptors: [traceInterceptor('Order')],
+              },
               package: ProductMicroservice.protobufPackage,
               protoPath: join(process.cwd(), 'proto/product.proto'),
               url: configService.getOrThrow('PRODUCT_GRPC_URL'),
@@ -76,6 +80,9 @@ import * as process from 'node:process';
           useFactory: (configService: ConfigService) => ({
             transport: Transport.GRPC,
             options: {
+              channelOptions: {
+                interceptors: [traceInterceptor('Order')],
+              },
               package: PaymentMicroservice.protobufPackage,
               protoPath: join(process.cwd(), 'proto/payment.proto'),
               url: configService.getOrThrow('PAYMENT_GRPC_URL'),

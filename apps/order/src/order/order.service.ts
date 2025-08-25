@@ -9,6 +9,7 @@ import {
   UserMicroservice,
   ProductMicroservice,
   PaymentMicroservice,
+  constructMetadata,
 } from '@app/common';
 import { PaymentCancelledException } from './exception/payment-cancelled.exception';
 import { Product } from './entity/product.entity';
@@ -22,7 +23,7 @@ import { PaymentFailedException } from './exception/payment-failed.exception';
 import { meta } from '@typescript-eslint/parser';
 import * as console from 'node:console';
 import e from 'express';
-import { status } from '@grpc/grpc-js';
+import { Metadata, status } from '@grpc/grpc-js';
 
 @Injectable()
 export class OrderService implements OnModuleInit {
@@ -58,15 +59,15 @@ export class OrderService implements OnModuleInit {
       );
   }
 
-  async createOrder(createOrderDto: CreateOrderDto) {
+  async createOrder(createOrderDto: CreateOrderDto, metadata: Metadata) {
     const { productIds, address, payment, meta } = createOrderDto;
 
     // 1) 사용자 정보 가져오기
-    const user = await this.getUserFromToken(meta.user.sub);
+    const user = await this.getUserFromToken(meta.user.sub, metadata);
 
     console.log(user);
     // 2) 상품 정보 가져오기
-    const products = await this.getProductsByIds(productIds);
+    const products = await this.getProductsByIds(productIds, metadata);
 
     // 3) 총 금액 계산하기
     const totalAmount = this.calculateTotalAmount(products);
@@ -85,13 +86,18 @@ export class OrderService implements OnModuleInit {
 
     // 6) 결제 시도하기
     // 7) 주문 상태 업데이트하기
-    await this.processPayment(order._id.toString(), payment, user.email);
+    await this.processPayment(
+      order._id.toString(),
+      payment,
+      user.email,
+      metadata,
+    );
 
     // 8) 결과 반환하기
     return this.orderModel.findById(order._id);
   }
 
-  private async getUserFromToken(userId: string) {
+  private async getUserFromToken(userId: string, metadata: Metadata) {
     // 1) USER MS: JWT 토큰 검증
     // const tResp = await lastValueFrom(
     //   this.userService.send({ cmd: 'parse_bearer_token' }, { token }),
@@ -103,14 +109,25 @@ export class OrderService implements OnModuleInit {
     //
     // // 2) USER MS: 사용자 정보 가져오기
     // const userId = tResp.data.sub;
-    const uResp = await lastValueFrom(this.userService.getUserInfo({ userId }));
+    const uResp = await lastValueFrom(
+      this.userService.getUserInfo(
+        { userId },
+        constructMetadata(OrderService.name, 'getUserFromToken', metadata),
+      ),
+    );
 
     return uResp;
   }
 
-  private async getProductsByIds(productIds: string[]): Promise<Product[]> {
+  private async getProductsByIds(
+    productIds: string[],
+    metadata: Metadata,
+  ): Promise<Product[]> {
     const resp = await lastValueFrom(
-      this.productService.getProductsInfo({ productIds }),
+      this.productService.getProductsInfo(
+        { productIds },
+        constructMetadata(OrderService.name, 'getProductsByIds', metadata),
+      ),
     );
 
     // [Product, Product] => product.price + product.price
@@ -157,14 +174,18 @@ export class OrderService implements OnModuleInit {
     orderId: string,
     payment: PaymentDto,
     userEmail: string,
+    metadata: Metadata,
   ) {
     try {
       const resp = await lastValueFrom(
-        this.paymentService.makePayment({
-          ...payment,
-          userEmail,
-          orderId,
-        }),
+        this.paymentService.makePayment(
+          {
+            ...payment,
+            userEmail,
+            orderId,
+          },
+          constructMetadata(OrderService.name, 'processPayment', metadata),
+        ),
       );
 
       const isPaid = resp.paymentStatus === 'Approved';

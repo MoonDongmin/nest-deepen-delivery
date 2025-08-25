@@ -11,6 +11,7 @@ import {
   PRODUCT_SERVICE,
   USER_SERVICE,
   NotificationMicroservice,
+  traceInterceptor,
 } from '@app/common';
 import { join } from 'path';
 import * as process from 'node:process';
@@ -21,9 +22,12 @@ import * as process from 'node:process';
       isGlobal: true,
       validationSchema: Joi.object({
         DB_URL: Joi.string().required(),
+        GRPC_URL: Joi.string().required(), // 추가 필요
+        NOTIFICATION_GRPC_URL: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.getOrThrow('DB_URL'),
@@ -36,12 +40,16 @@ import * as process from 'node:process';
       clients: [
         {
           name: NOTIFICATION_SERVICE,
+          imports: [ConfigModule],
           useFactory: (configService: ConfigService) => ({
             transport: Transport.GRPC,
             options: {
+              channelOptions: {
+                interceptors: [traceInterceptor('Payment')],
+              },
               package: NotificationMicroservice.protobufPackage,
               protoPath: join(process.cwd(), 'proto/notification.proto'),
-              url: configService.getOrThrow('NOTIFICACTION_GRPC_URL'),
+              url: configService.getOrThrow('NOTIFICATION_GRPC_URL'),
             },
           }),
           inject: [ConfigService],

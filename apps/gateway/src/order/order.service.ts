@@ -6,6 +6,7 @@ import {
   UserMeta,
   UserPayloadDto,
   OrderMicroservice,
+  constructMetadata,
 } from '@app/common';
 
 @Injectable()
@@ -27,11 +28,14 @@ export class OrderService implements OnModuleInit {
     createOrderDto: CreateOrderDto,
     userPayload: UserPayloadDto,
   ) {
-    return this.orderService.createOrder({
-      ...createOrderDto,
-      meta: {
-        user: userPayload,
+    return this.orderService.createOrder(
+      {
+        ...createOrderDto,
+        meta: {
+          user: userPayload,
+        },
       },
-    });
+      constructMetadata(OrderService.name, 'createOrder'),
+    );
   }
 }

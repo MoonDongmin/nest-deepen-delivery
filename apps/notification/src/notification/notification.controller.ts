@@ -11,19 +11,25 @@ import {
   RpcInterceptor,
   NotificationMicroservice,
   UserMicroservice,
+  GrpcInterceptor,
 } from '@app/common';
 import { SendPaymentNotificationDto } from './dto/send-payment-notification.dto';
+import { Metadata } from '@grpc/grpc-js';
 
 @Controller()
+@UseInterceptors(GrpcInterceptor)
 @NotificationMicroservice.NotificationServiceControllerMethods()
 export class NotificationController
   implements NotificationMicroservice.NotificationServiceController
 {
   constructor(private readonly notificationService: NotificationService) {}
 
-  async sendPaymentNotification(request: SendPaymentNotificationDto) {
+  async sendPaymentNotification(
+    request: SendPaymentNotificationDto,
+    metadata: Metadata,
+  ) {
     const resp = (
-      await this.notificationService.sendPaymentNotification(request)
+      await this.notificationService.sendPaymentNotification(request, metadata)
     ).toJSON();
 
     return {

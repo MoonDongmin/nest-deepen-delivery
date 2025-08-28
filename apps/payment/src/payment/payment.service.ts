@@ -11,7 +11,6 @@ import {
 } from '@app/common';
 import { lastValueFrom } from 'rxjs';
 import { Metadata, status } from '@grpc/grpc-js';
-import { NotificationModule } from '../../../notification/src/notification/notification.module';
 
 @Injectable()
 export class PaymentService implements OnModuleInit {

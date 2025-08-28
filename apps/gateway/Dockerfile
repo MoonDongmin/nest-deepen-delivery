@@ -22,7 +22,7 @@ RUN pnpm build gateway
 # 커맨드 실행
 CMD ["pnpm", "start:dev","gateway"]
 
-FROM node:alphine AS production
+FROM node:alpine AS production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}

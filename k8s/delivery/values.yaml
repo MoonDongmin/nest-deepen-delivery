@@ -1,0 +1,23 @@
+gateway:
+  replicas: 1
+
+notification:
+  replicas: 1
+  db_url: "mongodb+srv://dongmin:min5314@nestjs-mongo.dsk7ckg.mongodb.net/notifictaion?retryWrites=true&w=majority&appName=nestjs-mongo"
+
+order:
+  replicas: 1
+  db_url: "mongodb+srv://dongmin:min5314@nestjs-mongo.dsk7ckg.mongodb.net/order?retryWrites: true&w: majority&appName: nestjs-mongo"
+
+payment:
+  replicas: 1
+  db_url: "postgresql://postgres:postgres@nestjs-delivery-db.cbkwocekokgf.ap-northeast-2.rds.amazonaws.com/payment"
+
+
+product:
+  replicas: 1
+  db_url: "postgresql://postgres:postgres@nestjs-delivery-db.cbkwocekokgf.ap-northeast-2.rds.amazonaws.com/product"
+
+user:
+  replicas: 1
+  db_url: "postgresql://postgres:postgres@nestjs-delivery-db.cbkwocekokgf.ap-northeast-2.rds.amazonaws.com/user"

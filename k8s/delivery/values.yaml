@@ -3,11 +3,11 @@ gateway:
 
 notification:
   replicas: 1
-  db_url: "mongodb+srv://dongmin:min5314@nestjs-mongo.dsk7ckg.mongodb.net/notifictaion?retryWrites=true&w=majority&appName=nestjs-mongo"
+  db_url: "mongodb+srv://dongmin:min5314@nestjs-mongo.dsk7ckg.mongodb.net/notification?retryWrites=true&w=majority&appName=nestjs-mongo"
 
 order:
   replicas: 1
-  db_url: "mongodb+srv://dongmin:min5314@nestjs-mongo.dsk7ckg.mongodb.net/order?retryWrites: true&w: majority&appName: nestjs-mongo"
+  db_url: "mongodb+srv://dongmin:min5314@nestjs-mongo.dsk7ckg.mongodb.net/order?retryWrites=true&w=majority&appName=nestjs-mongo"
 
 payment:
   replicas: 1

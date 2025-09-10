@@ -3,7 +3,7 @@ kind: Service
 metadata:
   labels:
     app: payment
-  name: {{ .Chart.Name }}-payment-node-port
+  name: {{ .Chart.Name }}-payment-cluster-ip
 spec:
   ports:
     - port: 3000

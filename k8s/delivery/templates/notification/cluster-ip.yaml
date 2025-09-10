@@ -3,7 +3,7 @@ kind: Service
 metadata:
   labels:
     app: notification
-  name: {{ .Chart.Name }}-notification-node-port
+  name: {{ .Chart.Name }}-notification-cluster-ip
 spec:
   ports:
     - port: 3000

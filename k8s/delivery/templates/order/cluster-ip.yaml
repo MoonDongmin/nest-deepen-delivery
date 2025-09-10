@@ -3,7 +3,7 @@ kind: Service
 metadata:
   labels:
     app: order
-  name: {{ .Chart.Name }}-order-node-port
+  name: {{ .Chart.Name }}-order-cluster-ip
 spec:
   ports:
     - port: 3000

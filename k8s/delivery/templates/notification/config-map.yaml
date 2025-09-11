@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notification-config-map
+data:
+  TCP_PORT: "3001"
+  ORDER_HOST: "order"
+  DB_URL: "mongodb+srv://dongmin:min5314@nestjs-mongo.dsk7ckg.mongodb.net/notifictaion?retryWrites=true&w=majority&appName=nestjs-mongo"
+  ORDER_TCP_PORT: "3001"
+  ORDER_GRPC_URL: "{{ .Chart.Name }}-order-cluster-ip:3001"
+  GRPC_URL: "0.0.0.0:3001"
+
+

@@ -1,21 +1,8 @@
-import {
-  Controller,
-  Get,
-  UseInterceptors,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
-import { PaymentService } from './payment.service';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-import { MakePaymentDto } from './dto/make-payment.dto';
-import { RpcInterceptor } from '@app/common/interceptor/rpc.interceptor';
-import {
-  GrpcInterceptor,
-  PaymentMicroservice,
-  UserMicroservice,
-} from '@app/common';
-import { PaymentMethod } from './entity/payment.entity';
+import { Controller, UseInterceptors } from '@nestjs/common';
+import { PaymentService } from '../../payment.service';
+import { GrpcInterceptor, PaymentMicroservice } from '@app/common';
 import { Metadata } from '@grpc/grpc-js';
+import { PaymentMethod } from '../../domain/payment.domain';
 
 @Controller()
 @PaymentMicroservice.PaymentServiceControllerMethods()

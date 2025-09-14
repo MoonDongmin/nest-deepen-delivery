@@ -1,21 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-export enum PaymentStatus {
-  pending = 'Pending',
-  rejected = 'Rejected',
-  approved = 'Approved',
-}
-
-export enum PaymentMethod {
-  creditCard = 'CreditCard',
-  kakao = 'Kakao',
-}
-
-export enum NotificationStatus {
-  pending = 'pending',
-  sent = 'sent',
-}
-
 @Entity()
 export class Payment {
   @PrimaryGeneratedColumn('uuid')

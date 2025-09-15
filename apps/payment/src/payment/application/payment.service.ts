@@ -50,6 +50,7 @@ export class PaymentService {
       // 7) 만약에 실패하면 (4, 5) 결제를 Reject한다 -> Database, Domain
       payment.rejectPayment();
       await this.databaseOutputPort.updatePayment(payment);
+
       return payment;
     }
 

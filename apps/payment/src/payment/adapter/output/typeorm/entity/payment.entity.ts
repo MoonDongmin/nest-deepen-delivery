@@ -11,12 +11,14 @@ export class PaymentEntity {
   id: string;
 
   @Column({
+    type: 'enum',
     enum: PaymentStatus,
     default: PaymentStatus.pending,
   })
   paymentStatus: PaymentStatus;
 
   @Column({
+    type: 'enum',
     enum: PaymentMethod,
     default: PaymentMethod.creditCard,
   })
@@ -38,6 +40,7 @@ export class PaymentEntity {
   passwordTwoDigits: string;
 
   @Column({
+    type: 'enum',
     enum: NotificationStatus,
     default: NotificationStatus.pending,
   })

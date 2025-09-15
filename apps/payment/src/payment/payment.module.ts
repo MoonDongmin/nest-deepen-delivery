@@ -18,11 +18,11 @@ import { PortOneAdapter } from './adapter/output/portone/portone.adapter';
     },
     {
       provide: 'PaymentOutputPort',
-      useClass: GrpcAdapter,
+      useClass: PortOneAdapter,
     },
     {
       provide: 'NetworkOutputPort',
-      useClass: PortOneAdapter,
+      useClass: GrpcAdapter,
     },
   ],
 })

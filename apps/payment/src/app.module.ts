@@ -15,6 +15,7 @@ import {
 } from '@app/common';
 import { join } from 'path';
 import * as process from 'node:process';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -38,6 +39,13 @@ import * as process from 'node:process';
             rejectUnauthorized: false,
           },
         }),
+      }),
+      inject: [ConfigService],
+    }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.getOrThrow('MONGO_DB_URL'),
       }),
       inject: [ConfigService],
     }),

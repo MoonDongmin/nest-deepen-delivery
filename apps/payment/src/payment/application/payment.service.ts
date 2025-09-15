@@ -7,7 +7,9 @@ import {
 import { DatabaseOutputPort } from '../port/output/database.output-port';
 import { PaymentOutputPort } from '../port/output/payment.output-port';
 import { NetworkOutputPort } from '../port/output/network.output-port';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PaymentService {
   constructor(
     private readonly databaseOutputPort: DatabaseOutputPort,

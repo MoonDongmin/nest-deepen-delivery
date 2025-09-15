@@ -1,7 +1,12 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  NotificationStatus,
+  PaymentMethod,
+  PaymentStatus,
+} from '../../../../domain/payment.domain';
 
 @Entity()
-export class Payment {
+export class PaymentEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -37,4 +42,13 @@ export class Payment {
     default: NotificationStatus.pending,
   })
   notificationStatus: NotificationStatus;
+
+  @Column()
+  orderId: string;
+
+  @Column()
+  amount: number;
+
+  @Column()
+  userEmail: string;
 }

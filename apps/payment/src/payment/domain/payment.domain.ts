@@ -1,5 +1,3 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-
 export enum PaymentStatus {
   pending = 'Pending',
   rejected = 'Rejected',

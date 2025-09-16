@@ -1,10 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Customer }                    from './customer.entity';
 
 @Schema({
   _id: false,
 })
-export class DeliveryAddress {
+export class DeliveryAddressDocument {
   @Prop({
     required: true,
   })
@@ -31,5 +30,6 @@ export class DeliveryAddress {
   country: string;
 }
 
-export const DeliveryAddressSchema =
-  SchemaFactory.createForClass(DeliveryAddress);
+export const DeliveryAddressSchema = SchemaFactory.createForClass(
+  DeliveryAddressDocument,
+);

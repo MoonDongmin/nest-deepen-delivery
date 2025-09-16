@@ -13,6 +13,7 @@ export class PaymentDocument {
   paymentId: string;
 
   @Prop({
+    type: String,
     enum: PaymentMethod,
     default: PaymentMethod.creditCard,
   })

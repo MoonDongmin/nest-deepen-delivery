@@ -10,13 +10,13 @@ export class OrderRepository implements OrderOutputPort {
     @InjectModel(OrderDocument.name)
     private readonly orderRepository: Model<OrderDocument>,
   ) {}
-  async createOrder(orderId: OrderEntity): Promise<OrderEntity> {
+  async getOrder(orderId: string): Promise<OrderEntity> {
     const order = await this.orderRepository.findById(orderId);
 
     return new OrderDocumentMapper(order).toDomain();
   }
 
-  async getOrder(order: string): Promise<OrderEntity> {
+  async createOrder(order: OrderEntity): Promise<OrderEntity> {
     const result = await this.orderRepository.create(order);
 
     return new OrderDocumentMapper(result).toDomain();

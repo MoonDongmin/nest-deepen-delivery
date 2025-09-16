@@ -11,8 +11,9 @@ export class OrderDocumentMapper {
       deliveryAddress: this.document.deliveryAddress,
     });
 
-    order.setId(order.id);
-    order.setPayment(order.payment);
+    order.setId(this.document._id.toString());
+    order.setPayment(this.document.payment);
+
 
     return order;
   }

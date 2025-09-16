@@ -1,5 +1,7 @@
 import { OrderOutputPort } from '../port/output/order.output-port';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class StartDeliveryUseCase {
   constructor(private readonly orderOutputPort: OrderOutputPort) {}
 

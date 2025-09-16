@@ -1,0 +1,53 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Payment, PaymentSchema } from './payment.entity';
+import { CustomerDocument, CustomerSchema } from './customer.entity';
+import { Product, ProductSchema } from './product.entity';
+import {
+  DeliveryAddressDocument,
+  DeliveryAddressSchema,
+} from './delivery-address.entity';
+import { Document, Types, ObjectId } from 'mongoose';
+
+export enum OrderStatus {
+  pending = 'Pending',
+  paymentCancelled = 'PaymentCancelled',
+  paymentFailed = 'PaymentFailed',
+  paymentProcessed = 'PaymentProcessed',
+  deliveryStarted = 'deliveryStarted',
+  deliveryDone = 'deliveryDone',
+}
+
+@Schema()
+export class OrderDocument extends Document<ObjectId> {
+  @Prop({
+    type: CustomerSchema,
+    required: true,
+  })
+  customer: CustomerDocument;
+
+  @Prop({
+    type: [ProductSchema],
+    required: true,
+  })
+  products: Product[];
+
+  @Prop({
+    type: DeliveryAddressSchema,
+    required: true,
+  })
+  deliveryAddress: DeliveryAddressDocument;
+
+  @Prop({
+    enum: OrderStatus,
+    default: OrderStatus.pending,
+  })
+  status: OrderStatus;
+
+  @Prop({
+    type: PaymentSchema,
+    required: true,
+  })
+  payment: Payment;
+}
+
+export const OrderSchema = SchemaFactory.createForClass(OrderDocument);

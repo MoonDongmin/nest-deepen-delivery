@@ -11,7 +11,7 @@ order:
 
 payment:
   replicas: 1
-  db_url: "postgresql://postgres:postgres@nestjs-delivery-db.cbkwocekokgf.ap-northeast-2.rds.amazonaws.com/payment"
+  db_url: "postgresql://postgres:postgres@nestjs-delivery-db.cbkwocekokgf.ap-northeast-2.rds.amazonaws.com/payment-command"
 
 
 product:

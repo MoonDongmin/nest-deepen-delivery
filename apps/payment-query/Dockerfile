@@ -16,13 +16,13 @@ RUN npm i -g pnpm
 RUN pnpm i
 
 # 나머지 파일/폴더 복사해오기
-COPY apps/payment apps/payment
+COPY apps/payment-query apps/payment-query
 COPY libs libs
 
-RUN pnpm build payment
+RUN pnpm build payment-query
 
 # 커맨드 실행
-CMD ["pnpm", "start:dev", "payment"]
+CMD ["pnpm", "start:dev", "payment-query"]
 
 FROM node:alpine AS production
 
@@ -40,4 +40,4 @@ RUN pnpm install --prod
 COPY --from=development /usr/src/app/dist ./dist
 COPY proto proto
 
-CMD ["node", "dist/apps/payment/main"]
+CMD ["node", "dist/apps/payment-query/main"]

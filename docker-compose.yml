@@ -113,22 +113,37 @@ services:
       retries: 10
       start_period: 5s
 
-  payment:
+  payment_command:
     build:
       context: .
-      dockerfile: ./apps/payment/Dockerfile
+      dockerfile: apps/payment-command/Dockerfile
       target: development
-    command: pnpm run start:dev payment
+    command: pnpm run start:dev payment-command
     depends_on:
       postgres_payment:
         condition: service_healthy
     env_file:
-      - ./apps/payment/.env
+      - apps/payment-command/.env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+      -
+  payment_query:
+    build:
+      context: .
+      dockerfile: apps/payment-command/Dockerfile
+      target: development
+    command: pnpm run start:dev payment-query
+    depends_on:
+      postgres_payment:
+        condition: service_healthy
+    env_file:
+      - apps/payment-query/.env
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
 
-  postgres_payment:
+  postgres_payment_command:
     image: postgres:16
     environment:
       POSTGRES_USER: postgres
@@ -137,7 +152,7 @@ services:
     ports:
       - '6004:5432'
     volumes:
-      - ./postgres/payment:/var/lib/postgresql/data
+      - ./postgres/payment_command:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL","pg_isready -U postgres" ]
       interval: 5s
@@ -145,7 +160,7 @@ services:
       retries: 10
       start_period: 5s
 
-  mongo_payment:
+  mongo_payment_command:
     image: mongo:8
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
@@ -153,7 +168,24 @@ services:
     ports:
       - '6010:27017'
     volumes:
-      - ./mongo/payment:/data/lib
+      - ./mongo/payment_command:/data/lib
+    command: mongod --quiet --logpath /dev/null # mongo를 실행하는데, 로그가 많이 찍혀서 그냥 무시한다
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  mongo_payment_query:
+    image: mongo:8
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    ports:
+      - '6011:27017'
+    volumes:
+      - ./mongo/payment-command:/data/lib
     command: mongod --quiet --logpath /dev/null # mongo를 실행하는데, 로그가 많이 찍혀서 그냥 무시한다
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet

@@ -28,7 +28,7 @@ services:
   payment:
     image: moondongmin/dm-nestjs-payment
     env_file:
-      - ./apps/payment/prod.env
+      - apps/payment-command/prod.env
 
   notification:
     image: moondongmin/dm-nestjs-notification

@@ -2,7 +2,7 @@
 // versions:
 //   protoc-gen-ts_proto  v2.7.5
 //   protoc               v5.29.3
-// source: proto/payment.proto
+// source: proto/payment-command.proto
 
 /* eslint-disable */
 import type { Metadata } from "@grpc/grpc-js";

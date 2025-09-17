@@ -6,10 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import {
   NOTIFICATION_SERVICE,
-  PAYMENT_SERVICE,
-  PaymentMicroservice,
-  PRODUCT_SERVICE,
-  USER_SERVICE,
   NotificationMicroservice,
   traceInterceptor,
 } from '@app/common';
@@ -66,6 +62,18 @@ import { MongooseModule } from '@nestjs/mongoose';
             },
           }),
           inject: [ConfigService],
+        },
+        {
+          name: 'KAFKA_SERVICE',
+          useFactory: () => ({
+            transport: Transport.KAFKA,
+            options: {
+              client: {
+                clientId: 'payment-command',
+                brokers: ['kafka:9092'],
+              },
+            },
+          }),
         },
       ],
       isGlobal: true,

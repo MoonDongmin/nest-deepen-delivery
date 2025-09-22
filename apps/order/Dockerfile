@@ -18,6 +18,8 @@ RUN pnpm i
 # 나머지 파일/폴더 복사해오기
 COPY apps/order apps/order
 COPY libs libs
+COPY proto proto
+
 
 RUN pnpm build order
 
@@ -26,7 +28,7 @@ CMD ["pnpm", "start:dev", "order"]
 
 FROM node:alpine AS production
 
-ARG NODE_ENV=production
+ARG NODE_ENV=productiond
 ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app

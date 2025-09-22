@@ -32,7 +32,8 @@ export class PaymentDocumentMapper {
       userEmail: this.document.userEmail,
       amount: this.document.amount,
       paymentStatus: this.document.paymentStatus,
-      cardNumberLastForDigits: this.document.cardNumber.slice(-4),
+      cardNumberLastFourDigits: this.document.cardNumber.slice(-4),
+      orderId: this.document.orderId,
     };
   }
 }

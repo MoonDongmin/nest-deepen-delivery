@@ -84,7 +84,7 @@ import * as process from 'node:process';
                 interceptors: [traceInterceptor('Order')],
               },
               package: PaymentMicroservice.protobufPackage,
-              protoPath: join(process.cwd(), 'proto/payment-command.proto'),
+              protoPath: join(process.cwd(), 'proto/payment.proto'),
               url: configService.getOrThrow('PAYMENT_GRPC_URL'),
             },
           }),

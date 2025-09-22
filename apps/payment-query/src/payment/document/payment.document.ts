@@ -31,6 +31,11 @@ export class PaymentDocument extends Document<ObjectId> {
     required: true,
   })
   cardNumberLastFourDigits: string;
+
+  @Prop({
+    required: true,
+  })
+  orderId: string;
 }
 
 export const PaymentSchema = SchemaFactory.createForClass(PaymentDocument);

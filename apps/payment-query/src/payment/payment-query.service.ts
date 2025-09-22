@@ -15,7 +15,7 @@ export class PaymentQueryService {
   }
 
   async updateDocument(document: PaymentDocument) {
-    const { _id, ...rest } = document;
-    return this.paymentRepository.findByIdAndUpdate(_id, rest);
+    const { _id, orderId, ...rest } = document;
+    return this.paymentRepository.findOneAndUpdate({ orderId }, rest);
   }
 }

@@ -19,6 +19,19 @@ async function bootstrap() {
     },
   });
 
+  app.connectMicroservice({
+    transports: Transport.KAFKA,
+    options: {
+      client: {
+        clientId: 'order',
+        broker: ['kafka:9092'],
+      },
+      consumer: {
+        groupId: 'order-consumer',
+      },
+    },
+  });
+
   await app.init();
 
   await app.startAllMicroservices(); // MS 실행함

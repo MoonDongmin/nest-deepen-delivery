@@ -11,6 +11,15 @@ export class TypeormAdapter implements DatabaseOutputPort {
     @InjectRepository(PaymentEntity)
     private readonly paymentRepository: Repository<PaymentEntity>,
   ) {}
+  async findPaymentByOrderId(orderId: string): Promise<PaymentModel> {
+    const result = await this.paymentRepository.findOne({
+      where: {
+        orderId,
+      },
+    });
+
+    return new PaymentEntityMapper(result).toDomain();
+  }
 
   async savePayment(payment: PaymentModel): Promise<PaymentModel> {
     const result = await this.paymentRepository.save(payment);

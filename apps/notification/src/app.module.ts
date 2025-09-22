@@ -5,11 +5,7 @@ import { NotificationModule } from './notification/notification.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import {
-  NotificationMicroservice,
   ORDER_SERVICE,
-  PAYMENT_SERVICE,
-  PRODUCT_SERVICE,
-  USER_SERVICE,
   OrderMicroservice,
   traceInterceptor,
 } from '@app/common';
@@ -48,6 +44,21 @@ import * as process from 'node:process';
             },
           }),
           inject: [ConfigService],
+        },
+        {
+          name: 'KAFKA_SERVICE',
+          useFactory: () => ({
+            transport: Transport.KAFKA,
+            options: {
+              client: {
+                clientId: 'notification',
+                brokers: ['kafka:9092'],
+              },
+              consumer: {
+                groupId: 'notification-consumer',
+              },
+            },
+          }),
         },
       ],
       isGlobal: true,

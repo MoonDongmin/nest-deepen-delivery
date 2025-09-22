@@ -7,21 +7,19 @@ import { PaymentDocumentMapper } from './mapper/payment-document.mapper';
 import { Inject, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 
-export class MongooseAdapter
-  implements DatabaseOutputPort, OnModuleInit, OnModuleDestroy
-{
+export class MongooseAdapter implements DatabaseOutputPort {
   constructor(
     @InjectModel(PaymentDocument.name)
     private readonly paymentModel: Model<PaymentDocument>,
     @Inject('KAFKA_SERVICE')
     private readonly kafkaService: ClientKafka,
   ) {}
-  async onModuleDestroy() {
-    await this.kafkaService.close();
-  }
+  async findPaymentByOrderId(orderId: string): Promise<PaymentModel> {
+    const result = await this.paymentModel.findOne({
+      orderId,
+    });
 
-  async onModuleInit() {
-    await this.kafkaService.connect();
+    return new PaymentDocumentMapper(result).toDomain();
   }
 
   async savePayment(payment: PaymentModel): Promise<PaymentModel> {

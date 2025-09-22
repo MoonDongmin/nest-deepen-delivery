@@ -19,6 +19,19 @@ async function bootstrap() {
     },
   });
 
+  app.connectMicroservice({
+    transports: Transport.KAFKA,
+    options: {
+      client: {
+        clientId: 'payment-command',
+        brokers: ['kafka:9092'],
+      },
+      consumer: {
+        groupId: 'payment-command-consumer',
+      },
+    },
+  });
+
   await app.init();
 
   await app.startAllMicroservices(); // MS 실행함
